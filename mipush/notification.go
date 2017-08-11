@@ -3,9 +3,8 @@ package mipush
 import (
 	"encoding/json"
 	"fmt"
+	"imserver/lib/log"
 	"net/url"
-
-	log "github.com/meission/log4go"
 )
 
 // NOTE  define reference struct http://dev.xiaomi.com/doc/?p=533

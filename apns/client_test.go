@@ -23,9 +23,9 @@ func TestClient(t *testing.T) {
 		},
 		Badge: 1,
 	}
-	payload := &Payload{Aps: aps, Url: "http://example.com", TaskId: "201708011"}
+	payload := &Payload{Aps: aps, URL: "http://example.com", TaskID: "201708011"}
 
-	apnsClient.BoundId = "this.app.package.name"
+	apnsClient.BoundID = "this.app.package.name"
 	resp, err := apnsClient.Push("239435909zbdnfioeirotufhdjfdkl", payload, time.Now().Unix())
 	if err != nil {
 		panic(err)

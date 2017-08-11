@@ -6,19 +6,21 @@ import (
 
 // NOTE these structs and "Table" refer to https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html
 
+// Payload payload is this message body.
 type Payload struct {
 	Aps    Aps    `json:"aps"`
-	Url    string `json:"url"` // message schedule
-	TaskId string `json:"task_id"`
+	URL    string `json:"url"` // message schedule
+	TaskID string `json:"task_id"`
 	//	TaskType string `json:"task_type"`
 }
 
-/// Marshal .
+// Marshal Marshal payload.
 func (p *Payload) Marshal() []byte {
 	payload, _ := json.Marshal(p)
 	return payload
 }
 
+// Aps apple payload message .
 type Aps struct {
 	// If this property is included, the system displays a standard alert or a banner, based on the user’s setting.
 	// You can specify a string or a dictionary as the value of alert.
@@ -49,6 +51,7 @@ type Aps struct {
 	Category string `json:"category,omitempty"`
 }
 
+// Alert message title and body .
 type Alert struct {
 	Title string `json:"title,omitempty"`
 	Body  string `json:"body,omitempty"`
@@ -56,12 +59,11 @@ type Alert struct {
 	// TODO: support any more other field
 }
 
+// Response send the message return reponse.
 type Response struct {
 	ApnsID string
-
 	// Http status. (refer to Table 6-4)
 	StatusCode int
-
 	// The error indicating the reason for the failure. The error code is specified as a string.
 	// For a list of possible values, see (refer to Table 6-6)
 	Reason string

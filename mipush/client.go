@@ -4,17 +4,15 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-
-	log "github.com/meission/log4go"
 )
 
 type Client struct {
 	Header     http.Header
 	HTTPClient *http.Client
-	Url        string
+	URL        string
 }
 
-// NewClient:xm push client
+// NewClient xm push client
 // set request header and auth
 func NewClient(auth string) *Client {
 	header := http.Header{}
@@ -26,43 +24,39 @@ func NewClient(auth string) *Client {
 	}
 }
 
-// Production:  Production URL
-func (c *Client) SetProductionUrl(url string) {
+// SetProductionURL   Production URL
+func (c *Client) SetProductionURL(url string) {
 	c.Url = HostProBase + url
 }
 
-// Development:  Production URL
-func (c *Client) SetDevelopmentUrl(url string) {
+// SetDevelopmentURL   Production URL .
+func (c *Client) SetDevelopmentURL(url string) {
 	c.Url = HostDevbase + url
 }
 
-// push
+// Push xm message .
 func (c *Client) Push(xm *XMMessage) (response *Response, err error) {
 	var (
 		req  *http.Request
 		resp *http.Response
 		body []byte
 	)
-	req, err = http.NewRequest("POST", c.Url, bytes.NewBuffer([]byte(xm.xmuv.Encode())))
+	req, err = http.NewRequest("POST", c.URL, bytes.NewBuffer([]byte(xm.xmuv.Encode())))
 	if err != nil {
-		log.Error("http.NewRequest(\"POST\",c.Url:%s}error:%v", c.Url, err)
 		return nil, err
 	}
 	req.Header = c.Header
 	resp, err = c.HTTPClient.Do(req)
 	if err != nil {
-		log.Error("c.HTTPClient.Do(),error:%v", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	if body, err = ioutil.ReadAll(resp.Body); err != nil {
-		log.Error("ioutil.ReadAll(resp.Body);is error(%v).", err)
 		return nil, err
 	}
 	response = &Response{}
 	err = response.Unmarshal(body)
 	if err != nil {
-		log.Error("response.Unmarshal(body),error:%v.", err)
 		return nil, err
 	}
 	return response, nil

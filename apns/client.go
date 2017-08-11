@@ -1,4 +1,4 @@
-// Package apns2 is a go Apple Push Notification Service (APNs) provider that
+// Package apns is a go Apple Push Notification Service (APNs) provider that
 // allows you to send remote notifications to your iOS, tvOS, and OS X
 // apps, using the new APNs HTTP/2 network protocol.
 package apns
@@ -18,28 +18,30 @@ import (
 )
 
 const (
+	// ApnsPriorityHigh Apns Priority High
 	ApnsPriorityHigh = 10
-	ApnsPriorityLow  = 5
+	// ApnsPriorityLow Apns Priority Low
+	ApnsPriorityLow = 5
 )
 
 const (
-	// Success
+	// StatusCodesSuccess Success
 	StatusCodesSuccess = 200
-	// Bad request
+	// StatusCodesBadReq Bad request
 	StatusCodesBadReq = 400
-	// There was an error with the certificate.
+	// StatusCodesCerErr There was an error with the certificate.
 	StatusCodesCerErr = 403
-	// The request used a bad :method value. Only POST requests are supported.
+	// StatusCodesMethodErr The request used a bad :method value. Only POST requests are supported.
 	StatusCodesMethodErr = 405
-	// The device token is no longer active for the topic.
+	// StatusCodesNoActive The device token is no longer active for the topic.
 	StatusCodesNoActive = 410
-	// The notification payload was too large.
+	// StatusCodesPayloadTooLarge The notification payload was too large.
 	StatusCodesPayloadTooLarge = 413
-	// The server received too many requests for the same device token.
+	// StatusCodesTooManyReq The server received too many requests for the same device token.
 	StatusCodesTooManyReq = 429
-	// Internal server error
+	// StatusCodesServerErr Internal server error
 	StatusCodesServerErr = 500
-	// The server is shutting down and unavailable.
+	// StatusCodesServerUnavailable The server is shutting down and unavailable.
 	StatusCodesServerUnavailable = 503
 )
 
@@ -57,7 +59,7 @@ type Client struct {
 	HTTPClient  *http.Client
 	Certificate tls.Certificate
 	Host        string
-	BoundId     string
+	BoundID     string
 }
 
 // NewClient returns a new Client with an underlying http.Client configured with
@@ -86,7 +88,8 @@ func NewClient(certificate tls.Certificate, timeout time.Duration) *Client {
 	}
 }
 
-func NewClientWithProxy(certificate tls.Certificate, timeout, deadlineTime time.Duration, proxyUrl string) *Client {
+// NewClientWithProxy new client with proxy.
+func NewClientWithProxy(certificate tls.Certificate, timeout, deadlineTime time.Duration, proxyURL string) *Client {
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{certificate},
 		ClientAuth:   tls.NoClientCert,
@@ -95,7 +98,7 @@ func NewClientWithProxy(certificate tls.Certificate, timeout, deadlineTime time.
 		tlsConfig.BuildNameToCertificate()
 	}
 	return &Client{
-		HTTPClient:  &http.Client{Transport: proxyTransport(proxyUrl, tlsConfig, timeout, deadlineTime), Timeout: timeout},
+		HTTPClient:  &http.Client{Transport: proxyTransport(proxyURL, tlsConfig, timeout, deadlineTime), Timeout: timeout},
 		Certificate: certificate,
 		Host:        DefaultHost,
 	}
@@ -166,7 +169,7 @@ func (c *Client) Push(deviceToken string, payload *Payload, overTime int64) (res
 	)
 	url = fmt.Sprintf("%v/3/device/%v", c.Host, deviceToken)
 	req, _ = http.NewRequest("POST", url, bytes.NewBuffer(payload.Marshal()))
-	req.Header.Set("apns-topic", c.BoundId)
+	req.Header.Set("apns-topic", c.BoundID)
 	req.Header.Set("apns-expiration", strconv.FormatInt(overTime, 10))
 	httpRes, err = c.HTTPClient.Do(req)
 	if err != nil {
